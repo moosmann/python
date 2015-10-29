@@ -102,7 +102,6 @@ class TestMethods(unittest.TestCase):
 
 
 class Init(object):
-
     d = 'd'
 
     def __init__(self):
