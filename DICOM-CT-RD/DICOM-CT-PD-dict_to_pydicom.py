@@ -1,0 +1,164 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+    Reformat the MATLAB dicom dictionary for the standardized projection
+    data format from Mayo to Python syntax.
+
+    Write the main DICOM dictionary elements as a python dict called  with
+    format:
+    Tag: ('VR', 'VM', "Name", 'is_retired', 'Keyword')
+
+    Where
+        Tag is a 32-bit representation of the group, element as 0xggggeeee,
+          e.g. 0x00181600
+        VR is the Value Representation, e.g. 'OB' or 'OB or UI' or 'NONE'
+        VM is the Value Multiplicity, e.g. '1' or '2-2n' or '3-n' or '1-32'
+        Name is the DICOM Element Name (or Message Field for Command
+          Elements), e.g. 'Tomo Time' or 'Retired-blank' or 'Time Source'
+        is_retired is '' if not retired, 'Retired' otherwise, e.g. '' or
+          'Retired'
+        Keyword is the DICOM Keyword (e.g. 'TomoTime' or 'TimeSource')
+
+    Also write the repeating groups or elements, e.g. group "50xx", as a
+    python dict using format:
+    'Tag': ('VR', 'VM', "Name", 'is_retired', 'Keyword')
+
+    Where
+        Tag is a string representation of the element, e.g. '002031xx' or
+        '50xx0022'
+"""
+
+from __future__ import absolute_import, print_function
+import re
+import os
+import pydicom._dicom_dict as _dicom_dict
+
+
+# Mayo clinic DICOM file in Matlab format
+path_ml_dicom_dict = os.path.join(os.path.expanduser("~"),
+                                  'git/pydicom/DICOM-CT-RD')
+ml_dicom_dict = os.path.join(path_ml_dicom_dict, 'DICOM-CT-PD-dict_v8.txt')
+
+# pydicom dicts to be updated
+pydicom_dict = {
+    'DicomDictionary': _dicom_dict.DicomDictionary.copy(),
+    'RepeatersDictionary': _dicom_dict.RepeatersDictionary.copy()}
+
+# dicts of entries added and differing attribute names
+dict_entries_added = {'DicomDictionary': {}, 'RepeatersDictionary': {}}
+dict_diff_att_name = dict_entries_added.copy()
+
+# Counters
+counter = {'DicomDictionary': 0,
+           'RepeatersDictionary': 0,
+           'DifferentAttributeNames': 0}
+
+# Read tags from Matlab dict
+f = open(ml_dicom_dict)
+for line in f:
+    if line is '':
+        break
+
+    if line[0] is not "#":
+
+        # Read line
+        s = line.split()
+        if len(s) is not 4:
+            raise Exception('Entries per line ({}) is not 4 '.format(len(s)))
+
+        # MATLAB dict
+        # Tag
+        tag = s[0][1:5] + s[0][6:10]
+        # 'VR': value repreentation
+        vr = s[1]
+        # 'Keyword':concatenated name of the attribute
+        att_name = s[2]
+        # 'VL': value length
+        vl = s[3]
+        # "Name": name of attribute
+        name_split = re.findall(r'[A-Z](?:[A-Z]*(?![a-z])|[a-z]*)', att_name)
+        sep = ' '
+        name_split = sep.join(name_split)
+
+        # pydiom dict format:
+        #  Tag: ('VR', 'VM', "Name", 'is_retired', 'Keyword')
+        # if tag not hex add tag to DicomDictionary else RepeatersDictionary
+        if 'x' in tag:
+            dict_type = 'RepeatersDictionary'
+        else:
+            tag = int('0x' + tag, 16)
+            dict_type = 'DicomDictionary'
+
+        # check if key exists
+        try:
+            values = pydicom_dict[dict_type][tag]
+            pydicom_att_name = values[4]
+            if pydicom_att_name != att_name:
+                dict_diff_att_name[tag] = (pydicom_att_name, att_name)
+                counter['DifferentAttributeNames'] += 1
+        except KeyError:
+            entry = (s[1], s[3], name_split, '', att_name)
+            pydicom_dict[dict_type][tag] = entry
+            dict_entries_added[dict_type][tag] = entry
+            counter[dict_type] += 1
+
+f.close()
+
+print('\nConvert DICOM dict from Matlab format to pydicom format: ')
+print(' Path to Matlab dict: {}'.format(ml_dicom_dict))
+num_dicom = counter['DicomDictionary']
+num_repeater = counter['RepeatersDictionary']
+print(' Entries added to DicomDictionary: {}'.format(num_dicom))
+print(' Entries added to RepeatersDictionary: {}'.format(num_repeater))
+print(' Entries with same tag but different attribute name: {}'.format(
+        counter['DifferentAttributeNames']))
+
+
+# Write python dictionaries to file
+def write_dict(file_obj, py_dict):
+
+    keys = py_dict.keys()
+    keys.sort()
+
+    for dict_name in keys:
+        file_obj.write("\n%s = {\n" % dict_name)
+        attr = py_dict[dict_name].items()
+        attr.sort()
+
+        if isinstance(attr[0][0], str):  # RepeatersDictionary
+            for nn, entr in enumerate(attr):
+                file_obj.write("    '{}': {}, \n".format(
+                        attr[nn][0], attr[nn][1]))
+        else:  # DicomDicitonary
+            for nn, entr in enumerate(attr):
+                file_obj.write("    0x{:08X}: {},\n".format(
+                        attr[nn][0], attr[nn][1]))
+
+        file_obj.write("}\n")
+
+# Write '_dicom_dict.py'
+filename = './_dicom_dict.py'
+py_file = file(filename, "wb")
+py_file.write("# {}\n" .format(os.path.basename(filename)))
+print(os.path.basename(filename))
+py_file.write('"""DICOM data dictionary auto-generated by {}"""\n'.format(
+        os.path.basename(__file__)))
+py_file.write('from __future__ import absolute_import\n')
+write_dict(py_file, pydicom_dict)
+py_file.close()
+print(' pydicom dictionary written to: {}'.format(filename))
+
+# Write file with entries added
+if num_dicom + num_repeater > 0:
+    filename = './entries_added_to_dicom_dict.py'
+    py_file = file(filename, "wb")
+    py_file.write("# %s\n" % os.path.basename(filename))
+    py_file.write('"""DICOM dictionary of entries added from Mayo\'s Matlab dict '
+                  'auto-generated by \n%s"""\n' % os.path.basename(__file__))
+    py_file.write('from __future__ import absolute_import\n')
+    write_dict(py_file, dict_entries_added)
+    py_file.close()
+    print(' dictionary of entries added written to: {}'.format(filename))
+
+assert len(dict_entries_added['DicomDictionary']) + len(
+        dict_entries_added['RepeatersDictionary']) == num_dicom + num_repeater
