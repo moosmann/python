@@ -1,0 +1,1 @@
+/usr/bin/cc  -O3 -DNDEBUG    CMakeFiles/libwaveletstest.dir/test.c.o CMakeFiles/libwaveletstest.dir/compimages3.c.o  -o ../bin/libwaveletstest -rdynamic ../bin/liblibwavelets.so -lm -Wl,-rpath,/home/jmoosmann/git/LCR/libwavelets/libwavelets/bin 

@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jmoosmann/git/LCR/libwavelets/libwaveletstest/compimages3.c
+stdio.h
+-
+stdlib.h
+-
+math.h
+-
+time.h
+-
+bio_parameters.h
+/home/jmoosmann/git/LCR/libwavelets/libwaveletstest/bio_parameters.h
+
+/home/jmoosmann/git/LCR/libwavelets/libwaveletstest/test.c
+stdlib.h
+-
+stdio.h
+-
+time.h
+-
+string.h
+-
+wavelet_transform.h
+/home/jmoosmann/git/LCR/libwavelets/libwaveletstest/wavelet_transform.h
+test.h
+/home/jmoosmann/git/LCR/libwavelets/libwaveletstest/test.h
+
+/home/jmoosmann/git/LCR/libwavelets/libwaveletstest/test.h
+

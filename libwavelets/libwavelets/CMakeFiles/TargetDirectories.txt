@@ -1,0 +1,2 @@
+/home/jmoosmann/git/LCR/libwavelets/libwavelets/libwavelets/CMakeFiles/libwavelets.dir
+/home/jmoosmann/git/LCR/libwavelets/libwavelets/libwaveletstest/CMakeFiles/libwaveletstest.dir

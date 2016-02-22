@@ -1,0 +1,1 @@
+/usr/bin/c++  -fPIC -O3 -DNDEBUG   -shared -Wl,-soname,liblibwaveletspy.so -o ../bin/liblibwaveletspy.so CMakeFiles/libwaveletspy.dir/libwaveletspy.cpp.o  -L/usr/lib/x86_64-linux-gnu/libpython2.7.so ../bin/liblibwavelets.so -lboost_python -lpython2.7 -Wl,-rpath,/usr/lib/x86_64-linux-gnu/libpython2.7.so:/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/build/bin 

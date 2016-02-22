@@ -1,0 +1,1 @@
+/usr/bin/cc      CMakeFiles/libwaveletstest.dir/test.o CMakeFiles/libwaveletstest.dir/compimages3.o  -o libwaveletstest -rdynamic -llibwavelets -lm 

@@ -1,0 +1,4 @@
+/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/libwavelets/CMakeFiles/libwavelets.dir
+/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/libwaveletspy/CMakeFiles/libwaveletspy.dir
+/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/libwaveletspy/CMakeFiles/libwaveletspyInstall.dir
+/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/libwaveletstest/CMakeFiles/libwaveletstest.dir

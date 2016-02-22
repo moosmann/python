@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../../libwavelets/bio.h
+string.h
+-
+bio_parameters.h
+../../libwavelets/bio_parameters.h
+
+../../libwavelets/bio_parameters.h
+
+../../libwavelets/libwavelets_export.h
+
+../../libwavelets/wavelet_transform.h
+bio.h
+../../libwavelets/bio.h
+libwavelets_export.h
+../../libwavelets/libwavelets_export.h
+bio_parameters.h
+../../libwavelets/bio_parameters.h
+
+/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/libwaveletspy.cpp
+boost/python.hpp
+-
+boost/python/extract.hpp
+/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/boost/python/extract.hpp
+boost/python/numeric.hpp
+/home/jmoosmann/git/LCR/libwavelets/libwaveletspy/boost/python/numeric.hpp
+iostream
+-
+vector
+-
+libwavelets/wavelet_transform.h
+-
+
